@@ -311,6 +311,47 @@ describe('MultiSet', function() {
     assert.deepStrictEqual(top, [['i', 7]]);
   });
 
+  it('should clamp the number of top items to the dimension (issue #177).', function() {
+    var set = new MultiSet(),
+        count = 4294967296;
+
+    set.add('a', count);
+    set.add('b', 2);
+    set.add('c');
+
+    assert.deepStrictEqual(set.top(count), [['a', count], ['b', 2], ['c', 1]]);
+    assert.strictEqual(set.size, count + 3);
+    assert.strictEqual(set.dimension, 3);
+  });
+
+  it('should return no top items from an empty set.', function() {
+    var set = new MultiSet();
+
+    assert.deepStrictEqual(set.top(1), []);
+    assert.deepStrictEqual(set.top(4294967296), []);
+  });
+
+  it('should reject invalid top counts.', function() {
+    [new MultiSet(), MultiSet.from('a')].forEach(function(set) {
+      [undefined, null, '2', 0, -1].forEach(function(count) {
+        assert.throws(function() {
+          set.top(count);
+        }, /n must be a number > 0/);
+      });
+    });
+  });
+
+  it('should retrieve top items after deleting an absent key.', function() {
+    var set = MultiSet.from('aaabbc'),
+        empty = new MultiSet();
+
+    set.delete('missing');
+    empty.delete('missing');
+
+    assert.deepStrictEqual(set.top(3), [['a', 3], ['b', 2], ['c', 1]]);
+    assert.deepStrictEqual(empty.top(1), []);
+  });
+
   it('size should remain consistent (issue #197).', function() {
     var set = new MultiSet();
 
