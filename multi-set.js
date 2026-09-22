@@ -146,7 +146,7 @@ MultiSet.prototype.has = function(item) {
 MultiSet.prototype.delete = function(item) {
   var count = this.items.get(item);
 
-  if (count === 0)
+  if (typeof count === 'undefined')
     return false;
 
   this.size -= count;
@@ -259,7 +259,7 @@ MultiSet.prototype.top = function(n) {
   if (typeof n !== 'number' || n <= 0)
     throw new Error('mnemonist/multi-set.top: n must be a number > 0.');
 
-  n = Math.min(n, this.items.size);
+  n = Math.min(n, this.dimension);
 
   if (n === 0)
     return [];

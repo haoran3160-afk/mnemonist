@@ -88,11 +88,19 @@ describe('MultiSet', function() {
     set.add('hello');
     set.add('world');
 
-    set.delete('hello');
+    assert.strictEqual(set.delete('hello'), true);
 
     assert.strictEqual(set.size, 1);
     assert.strictEqual(set.dimension, 1);
     assert.strictEqual(set.multiplicity('hello'), 0);
+
+    assert.strictEqual(set.delete('hello'), false);
+    assert.strictEqual(set.size, 1);
+    assert.strictEqual(set.dimension, 1);
+
+    assert.strictEqual(set.delete('world'), true);
+    assert.strictEqual(set.size, 0);
+    assert.strictEqual(set.dimension, 0);
   });
 
   it('should be possible to remove an arbitrary number of an item from the set.', function() {
@@ -345,8 +353,13 @@ describe('MultiSet', function() {
     var set = MultiSet.from('aaabbc'),
         empty = new MultiSet();
 
-    set.delete('missing');
-    empty.delete('missing');
+    assert.strictEqual(set.delete('missing'), false);
+    assert.strictEqual(empty.delete('missing'), false);
+
+    assert.strictEqual(set.size, 6);
+    assert.strictEqual(set.dimension, 3);
+    assert.strictEqual(empty.size, 0);
+    assert.strictEqual(empty.dimension, 0);
 
     assert.deepStrictEqual(set.top(3), [['a', 3], ['b', 2], ['c', 1]]);
     assert.deepStrictEqual(empty.top(1), []);
